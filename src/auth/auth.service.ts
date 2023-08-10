@@ -3,6 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entity/auth.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,7 +19,7 @@ export class AuthService {
       throw new NotFoundException(`No user found for email ${email}.`);
     }
 
-    const isPasswordValid = user.password === password;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password.');
